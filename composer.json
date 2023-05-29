@@ -20,6 +20,6 @@
     }
   },
   "require": {
-    "cleantalk/spbct-installer": "^1.0"
+    "cleantalk/spbct-installer": "*"
   }
 }
