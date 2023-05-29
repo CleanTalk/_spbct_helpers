@@ -18,5 +18,8 @@
     "allow-plugins": {
       "cleantalk/spbct-installer": true
     }
+  },
+  "require": {
+    "cleantalk/spbct-installer": "^1.0"
   }
 }
