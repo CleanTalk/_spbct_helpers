@@ -1,7 +1,7 @@
 {
   "name": "cleantalk/spbct-helpers",
   "description": "CleanTalk SPBCT Helpers classes",
-  "type": "cleantalk-apbct-lib",
+  "type": "cleantalk-spbct-lib",
   "authors": [
     {
       "name": "CleanTalk Team",
@@ -12,6 +12,11 @@
   "autoload": {
     "psr-4": {
       "CleantalkSP\\Common\\Helpers\\": "./"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "cleantalk/spbct-installer": true
     }
   }
 }
