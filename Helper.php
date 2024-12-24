@@ -92,12 +92,12 @@ class Helper
      * @param string $signature_body Character position
      * @param bool $is_regexp Flag. Is signature is regular expression?
      *
-     * @return int String number
+     * @return array Array of lines number with needle
      */
-    public static function getNeedleStringNumberFromFile($file_path, $signature_body, $is_regexp = false)
+    public static function getNeedleStringsNumberFromFile($file_path, $signature_body, $is_regexp = false)
     {
         $file = file($file_path);
-        $out  = 1;
+        $out_line_numbers = array();
 
         foreach ( $file as $number => $line ) {
             if (
@@ -105,9 +105,10 @@ class Helper
                 ( ! $is_regexp && strripos($line, stripslashes($signature_body)) !== false)
             ) {
                 $out = $number + 1;
+                $out_line_numbers[] = $out;
             }
         }
 
-        return $out;
+        return $out_line_numbers;
     }
 }
