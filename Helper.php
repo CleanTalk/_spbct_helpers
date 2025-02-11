@@ -97,7 +97,7 @@ class Helper
     public static function getNeedleStringsNumberFromFile($file_path, $signature_body, $is_regexp = false)
     {
         $file = file($file_path);
-        $out_line_numbers = array();
+        $out_line_numbers = array('1');
 
         foreach ( $file as $number => $line ) {
             if (
