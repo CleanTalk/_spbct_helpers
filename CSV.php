@@ -17,16 +17,42 @@ use CleantalkSP\Common\Validate;
  */
 class CSV
 {
-    public static function sanitizeFromEmptyLines($buffer)
+    /**
+     * Sanitize buffer from empty lines, keep this method with void return to reduce memory usage
+     * @param array $buffer
+     *
+     * @return void
+     */
+    public static function sanitizeFromEmptyLines(&$buffer)
     {
         $buffer = (array) $buffer;
-        foreach ($buffer as $indx => &$line) {
-            $line = trim($line);
-            if ($line === '') {
-                unset($buffer[$indx]);
+
+        $buffer_count = count($buffer);
+        for ( $i = 0; $i < $buffer_count; $i++ ) {
+            if (trim($buffer[$i]) === '') {
+                unset($buffer[$i]);
             }
         }
+    }
 
+    /**
+     * Parse Comma-separated values, without formatting to csv
+     *
+     * @param string $buffer
+     *
+     * @return string[]
+     */
+    public static function parseCSVLite($buffer)
+    {
+        $buffer = explode("\n", $buffer);
+        self::sanitizeFromEmptyLines($buffer);
+
+        $buffer_count = count($buffer);
+        for ( $i = 0; $i < $buffer_count; $i++ ) {
+            if (!empty($buffer[$i]) ) {
+                $buffer[$i] = substr($buffer[$i], 6);
+            }
+        }
         return $buffer;
     }
 
@@ -40,7 +66,7 @@ class CSV
     public static function parseCSV($buffer)
     {
         $buffer = explode("\n", $buffer);
-        $buffer = self::sanitizeFromEmptyLines($buffer);
+        self::sanitizeFromEmptyLines($buffer);
         foreach ($buffer as &$line) {
             if ($line !== '') {
                 $line = str_getcsv($line, ',', '\'');
