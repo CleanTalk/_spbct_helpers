@@ -50,29 +50,6 @@ class IP
     );
 
     /**
-     * @var array Set of CleanTalk servers
-     */
-    public static $cleantalks_servers = array(
-        // MODERATE
-        'moderate1.cleantalk.org' => '162.243.144.175',
-        'moderate2.cleantalk.org' => '159.203.121.181',
-        'moderate3.cleantalk.org' => '88.198.153.60',
-        'moderate4.cleantalk.org' => '159.69.51.30',
-        'moderate5.cleantalk.org' => '95.216.200.119',
-        'moderate6.cleantalk.org' => '138.68.234.8',
-        // APIX
-        'apix1.cleantalk.org' => '35.158.52.161',
-        'apix2.cleantalk.org' => '18.206.49.217',
-        'apix3.cleantalk.org' => '3.18.23.246',
-        'apix4.cleantalk.org' => '44.227.90.42',
-        'apix5.cleantalk.org' => '15.188.198.212',
-        'apix6.cleantalk.org' => '54.219.94.72',
-        //ns
-        'netserv2.cleantalk.org' => '178.63.60.214',
-        'netserv3.cleantalk.org' => '188.40.14.173',
-    );
-
-    /**
      * Getting arrays of IP (REMOTE_ADDR, X-Forwarded-For, X-Real-Ip, Cf_Connecting_Ip)
      *
      * @param string $ip_type_to_get Type of IP you want to receive
@@ -197,9 +174,9 @@ class IP
                 break;
             // Remote addr
             case 'remote_addr':
-                $ip_version = self::validate(Server::get('REMOTE_ADDR'));
+                $ip_version = self::validate(Server::getString('REMOTE_ADDR'));
                 if ($ip_version) {
-                    $out = $ip_version === 'v6' ? self::normalizeIPv6(Server::get('REMOTE_ADDR')) : Server::get('REMOTE_ADDR');
+                    $out = $ip_version === 'v6' ? self::normalizeIPv6(Server::getString('REMOTE_ADDR')) : Server::getString('REMOTE_ADDR');
                 }
                 break;
             // X-Forwarded-For
@@ -260,7 +237,7 @@ class IP
                             self::isIPInPrivateNetworks($out, $ip_version) ||
                             self::isIPInNetwork(
                                 $out,
-                                Server::get('SERVER_ADDR') . '/24',
+                                Server::getString('SERVER_ADDR') . '/24',
                                 $ip_version
                             )
                         ))
@@ -553,42 +530,6 @@ class IP
         }
 
         return $out;
-    }
-
-    /**
-     * Get URL form IP. Check if it's belong to cleantalk.
-     *
-     * @param string $ip
-     *
-     * @return bool|false
-     * @psalm-suppress PossiblyUnusedMethod
-     */
-    public static function isIPCleantalks($ip)
-    {
-        if (self::validate($ip)) {
-            $url = array_search($ip, self::$cleantalks_servers, true);
-            return (bool) $url;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get URL form IP. Check if it's belong to cleantalk.
-     *
-     * @param $ip
-     *
-     * @return false|int|string
-     * @psalm-suppress PossiblyUnusedMethod
-     */
-    public static function resolveCleantalks($ip)
-    {
-        if (self::validate($ip)) {
-            $url = array_search($ip, self::$cleantalks_servers, true);
-            return $url ?: self::resolve($ip);
-        }
-
-        return $ip;
     }
 
     /**
