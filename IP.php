@@ -533,21 +533,42 @@ class IP
     }
 
     /**
-     * Get URL form IP
+     * Resolve IP to hostname with FCrDNS (Forward-Confirmed reverse DNS) verification.
+     * Protects against PTR spoofing by verifying the hostname resolves back to the same IP.
      *
-     * @param $ip
+     * @param string $ip IP address to resolve
      *
-     * @return string
+     * @return string|false Verified hostname or false on failure
      */
     public static function resolve($ip)
     {
-        if (self::validate($ip)) {
-            $url = gethostbyaddr($ip);
-            if ($url) {
-                return $url;
-            }
+        if (!self::validate($ip)) {
+            return false;
         }
-        return $ip;
+
+        // Reverse DNS lookup (PTR record)
+        $hostname = gethostbyaddr($ip);
+
+        // If gethostbyaddr returns the IP itself, it means no PTR record exists
+        if (!$hostname || $hostname === $ip) {
+            return false;
+        }
+
+        // Forward DNS lookup (A/AAAA records) - verify the hostname points back to the IP
+        $forward_ips = gethostbynamel($hostname);
+
+        // If forward lookup fails, we can't verify
+        if (!$forward_ips) {
+            return false;
+        }
+
+        // Check if the original IP is in the list of IPs the hostname resolves to
+        if (in_array($ip, $forward_ips, true)) {
+            return $hostname;
+        }
+
+        // FCrDNS verification failed - possible PTR spoofing attempt
+        return false;
     }
 
     /**
