@@ -542,7 +542,9 @@ class IP
      */
     public static function resolve($ip)
     {
-        if (!self::validate($ip)) {
+        // Validate IP first
+        $ip_version = self::validate($ip);
+        if (!$ip_version) {
             return false;
         }
 
@@ -554,20 +556,41 @@ class IP
             return false;
         }
 
-        // Forward DNS lookup (A/AAAA records) - verify the hostname points back to the IP
-        $forward_ips = gethostbynamel($hostname);
+        // Forward DNS lookup - use dns_get_record() to support both IPv4 (A) and IPv6 (AAAA) records
+        $record_type = ($ip_version === 'v6') ? DNS_AAAA : DNS_A;
+        $ip_field = ($ip_version === 'v6') ? 'ipv6' : 'ip';
+
+        $records = @dns_get_record($hostname, $record_type);
 
         // If forward lookup fails, we can't verify
-        if (!$forward_ips) {
+        if (empty($records)) {
+            return false;
+        }
+
+        // Extract IPs from DNS records
+        $forward_ips = array();
+        foreach ($records as $record) {
+            if (isset($record[$ip_field])) {
+                $forward_ips[] = $record[$ip_field];
+            }
+        }
+
+        if (empty($forward_ips)) {
             return false;
         }
 
         // Check if the original IP is in the list of IPs the hostname resolves to
-        if (in_array($ip, $forward_ips, true)) {
+        if ($ip_version === 'v6') {
+            $normalized_ip = self::normalizeIPv6($ip);
+            foreach ($forward_ips as $forward_ip) {
+                if (self::normalizeIPv6($forward_ip) === $normalized_ip) {
+                    return $hostname;
+                }
+            }
+        } elseif (in_array($ip, $forward_ips, true)) {
             return $hostname;
         }
 
-        // FCrDNS verification failed - possible PTR spoofing attempt
         return false;
     }
 
