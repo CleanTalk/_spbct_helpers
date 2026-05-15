@@ -679,7 +679,7 @@ class IP
                 return false;
             }
         } else {
-            error_log('Security by CleanTalk: PHP insctance is compiled with no inet_pton() IPv6 support.');
+            DevLogger::write('Security by CleanTalk: PHP insctance is compiled with no inet_pton() IPv6 support.');
         }
         return false;
     }
