@@ -20,6 +20,9 @@ class DevLogger
         if ( ! is_string($msg) ) {
             return;
         }
-        error_log($msg); // phpcs:ignore
+        /**
+         * @psalm-suppress ForbiddenCode
+         */
+        error_log($msg);
     }
 }
