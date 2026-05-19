@@ -20,6 +20,9 @@ class DevLogger
         if ( ! is_string($msg) ) {
             return;
         }
+        if ( ! function_exists('error_log') ) {
+            return;
+        }
         /**
          * @psalm-suppress ForbiddenCode
          */
