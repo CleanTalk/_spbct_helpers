@@ -17,6 +17,9 @@ class DevLogger
 {
     public static function write($msg, $context = null)
     {
-        error_log($msg);
+        if ( ! is_string($msg) ) {
+            return;
+        }
+        error_log($msg); // phpcs:ignore
     }
 }
