@@ -69,7 +69,7 @@ class CSV
         self::sanitizeFromEmptyLines($buffer);
         foreach ($buffer as &$line) {
             if ($line !== '') {
-                $line = str_getcsv($line, ',', '\'');
+                $line = str_getcsv($line, ',', '\'', '\\');
             }
         }
 
@@ -143,7 +143,7 @@ class CSV
     {
         $line = trim(static::popLineFromCSV($csv));
         $line = strpos($line, '\'') === 0
-            ? str_getcsv($line, ',', '\'')
+            ? str_getcsv($line, ',', '\'', '\\')
             : explode(',', $line);
         if ($map) {
             $line = array_combine($map, $line);
