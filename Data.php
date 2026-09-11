@@ -138,7 +138,9 @@ class Data
         } elseif (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $type  = finfo_buffer($finfo, $data);
-            finfo_close($finfo);
+            if (PHP_VERSION_ID < 80000) {
+                finfo_close($finfo);
+            }
         }
 
         return $type;
