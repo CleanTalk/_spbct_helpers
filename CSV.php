@@ -41,6 +41,7 @@ class CSV
      * @param string $buffer
      *
      * @return string[]
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public static function parseCSVLite($buffer)
     {
